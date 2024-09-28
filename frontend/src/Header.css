@@ -8,15 +8,14 @@
   }
   
   .logo {
-	width: 220px;
-	height: 90px;
+	
 	color: white;
 	font-size: 20px;
   }
 
   .logo img {
-	width: 220px; /* Ширина логотипа */
-	height: auto; /* Высота изменяется пропорционально */
+
+	height: 90px; /* Высота изменяется пропорционально */
   }
   
   .nav ul {
