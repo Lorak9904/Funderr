@@ -1,11 +1,15 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from register.models import Firma, NGO, Konkurs, Priorytet, Zadanie, Terminy, ZasadyDotacji
+from .models import Event
 from difflib import SequenceMatcher
 from datetime import date
 import html.parser
 from time import sleep
 from django.http import HttpResponse, JsonResponse
+from datetime import date, time
+from django.http import JsonResponse
+from django.core import serializers
 
 from django.forms import formset_factory, modelformset_factory
 from django.forms.models import model_to_dict
@@ -44,7 +48,14 @@ import re
 import html2text
 from base64 import b64decode, b64encode
 import os
-from collections import defaultdict
+
+
+
+
+
+
+
+
 
 def dopasowanie(obiekt1, obiekt2):
     """Obliczanie dopasowania pomiędzy dwoma obiektami (firma lub NGO) na podstawie kilku kryteriów"""
@@ -225,30 +236,99 @@ def browse(request):
     return JsonResponse(response_data)
 
 def home(request):
+    # Get all events
+    events = Event.objects.all()
+    
+    # Create a list of dictionaries for each event
+    events_list = []
+    for event in events:
+        event_dict = model_to_dict(event)
+
+        # Format the date, time, and created_at fields
+        event_dict['date'] = event.date.isoformat() if event.date else None
+        event_dict['time'] = event.time.isoformat() if event.time else None
+        event_dict['created_at'] = event.created_at.isoformat()
+
+        # Handle the image field
+        event_dict['image'] = event.image.url if event.image else None
+        
+        # Append the formatted event dictionary to the list
+        events_list.append(event_dict)
+
+    # Prepare the response data with the key "carousel"
     response_data = {
-        "status": "success",
-        "message": "Welcome to the API!",
-        "data": {
-            "name": "Django-Vue/Angular Integration",
-            "version": "1.0",
-            "description": "This is a sample JSON response from the Django server.",
-            "features": [
-                "REST API",
-                "CORS Enabled",
-                "Frontend Integration with Vue/Angular"
-            ],
-            "contact": {
-                "email": "admin@example.com",
-                "support": "http://example.com/support"
-            }
-        }
+        'carousel': events_list
     }
+
+    # Return the JSON response
     return JsonResponse(response_data)
 
 
 
-
 def funkcja(request):
+
+    #    events_data = [
+    #     {
+    #         'name': 'Wielka Orkiestra Świątecznej Pomocy',
+    #         'description': 'Annual charity event supporting healthcare in Poland.',
+    #         'date': date(2024, 1, 14),
+    #         'time': time(12, 0),
+    #         'location': 'Warsaw, Poland',
+    #         'organizer': 'WOŚP Foundation',
+    #         'contact': 'contact@wosp.org.pl',
+    #         'image': None,
+    #         'partners': 'TVN, Allegro, Siepomaga'
+    #     },
+    #     {
+    #         'name': 'Poland Business Run',
+    #         'description': 'Charity relay race supporting people with mobility impairments.',
+    #         'date': date(2024, 9, 3),
+    #         'time': time(9, 30),
+    #         'location': 'Krakow, Poland',
+    #         'organizer': 'Poland Business Run Foundation',
+    #         'contact': 'info@polandbusinessrun.pl',
+    #         'image': None,
+    #         'partners': 'PwC, UBS, ABB'
+    #     },
+    #     {
+    #         'name': 'Bieg Wegański',
+    #         'description': 'Charity run promoting veganism and animal rights.',
+    #         'date': date(2024, 4, 21),
+    #         'time': time(10, 0),
+    #         'location': 'Warsaw, Poland',
+    #         'organizer': 'Viva Foundation',
+    #         'contact': 'contact@viva.org.pl',
+    #         'image': None,
+    #         'partners': 'Vegan Fair, BioBazar'
+    #     },
+    #     {
+    #         'name': 'Runmageddon',
+    #         'description': 'Extreme obstacle course race with a charity component.',
+    #         'date': date(2024, 6, 10),
+    #         'time': time(8, 0),
+    #         'location': 'Gdańsk, Poland',
+    #         'organizer': 'Runmageddon Foundation',
+    #         'contact': 'info@runmageddon.pl',
+    #         'image': None,
+    #         'partners': 'PKO Bank Polski, 4F, T-Mobile'
+    #     },
+    #     {
+    #         'name': 'Pomoc Dla Ukrainy',
+    #         'description': 'Fundraising event to support Ukraine during the ongoing conflict.',
+    #         'date': date(2024, 3, 15),
+    #         'time': time(18, 0),
+    #         'location': 'Poznań, Poland',
+    #         'organizer': 'Help for Ukraine Foundation',
+    #         'contact': 'contact@helpforukraine.org',
+    #         'image': None,
+    #         'partners': 'UNICEF, Caritas, Polish Red Cross'
+    #     }
+    # ]
+
+    # for event_data in events_data:
+    #     Event.objects.create(**event_data)
+
+    # print("Fundraising events created successfully!")
     
     # 1. Create a Konkurs record
     konkurs = Konkurs.objects.create(
