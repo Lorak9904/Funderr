@@ -8,9 +8,6 @@ function App() {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      {/* Остальная часть сайта */}
-      {/* Тут будет основная часть */}
-      <div className='flex-grow'></div>
       <Footer />
     </div>
   )
