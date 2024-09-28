@@ -1,0 +1,93 @@
+/* main styles for header */
+.header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	background-color: #F65F6F;
+	padding: 20px;
+  }
+  
+  .logo {
+	width: 220px;
+	height: 90px;
+	color: white;
+	font-size: 20px;
+  }
+
+  .logo img {
+	width: 220px; /* Ширина логотипа */
+	height: auto; /* Высота изменяется пропорционально */
+  }
+  
+  .nav ul {
+	list-style: none;
+	display: flex;
+  }
+  
+  .nav ul li {
+	margin-left: 20px;
+  }
+  
+  .nav ul li a {
+	color: white;
+	text-decoration: none;
+	font-size: 18px;
+  }
+  
+  /* Burger menu*/
+  .burger {
+	display: none; /* hide on hight screens */
+	flex-direction: column;
+	cursor: pointer;
+  }
+  
+  .burger span {
+	width: 25px;
+	height: 3px;
+	background-color: white;
+	margin: 4px;
+	transition: all 0.3s ease;
+  }
+  
+  /* animation*/
+  .burger.active span:nth-child(1) {
+	transform: rotate(45deg) translate(5px, 5px);
+  }
+  
+  .burger.active span:nth-child(2) {
+	opacity: 0;
+  }
+  
+  .burger.active span:nth-child(3) {
+	transform: rotate(-45deg) translate(5px, -5px);
+  }
+  
+  /* nie widac na telefonie */
+  @media (max-width: 768px) {
+	.burger {
+	  display: flex; /* widac */
+	}
+  
+	.nav {
+	  display: none; /* stale nie widac */
+	}
+  
+	.nav.active {
+	  display: block; /* pokazuje menu jak jest aktywnie*/
+	  position: absolute;
+	  top: 60px;
+	  left: 0;
+	  width: 100%;
+	  background-color: #F65F6F
+	}
+  
+	.nav ul {
+	  flex-direction: column;
+	  padding: 20px;
+	}
+  
+	.nav ul li {
+	  margin: 10px 0;
+	}
+  }
+  
