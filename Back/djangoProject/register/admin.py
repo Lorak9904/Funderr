@@ -2,12 +2,12 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
 from django.db.models import F
-from .models import Employee, Company, RegistrationKey
+from .models import Firma, NGO
 
 class EmployeeInline(admin.StackedInline):
-    model = Employee
+    model = Firma
     can_delete = False
-    verbose_name_plural = "Employee"
+    verbose_name_plural = "Firma"
 
 class UserAdmin(BaseUserAdmin):
     inlines = [EmployeeInline]
@@ -26,7 +26,7 @@ class UserAdmin(BaseUserAdmin):
         return queryset
 
 
-class RegistrationKeyAdmin(admin.ModelAdmin):
+class NGOAdmin(admin.ModelAdmin):
     list_display = ('key', 'company', 'created_at', 'is_used')
     list_filter = ('company', 'is_used', 'created_at')
     search_fields = ('key', 'company__companyName')
@@ -41,5 +41,5 @@ class RegistrationKeyAdmin(admin.ModelAdmin):
 
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
-admin.site.register(Company)
-admin.site.register(RegistrationKey, RegistrationKeyAdmin)
+admin.site.register(Firma)
+admin.site.register(NGO, NGOAdmin)
