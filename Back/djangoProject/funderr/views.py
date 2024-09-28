@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from register.models import Firma, NGO, Partner
+from register.models import Firma, NGO, Partner, CzłonekZespolu
 from .models import Event
 from difflib import SequenceMatcher
 from datetime import date
@@ -567,11 +567,120 @@ def handle():
             )
 
 
+def handle1():
+    ngos_data = [
+        {
+            "nazwaOrganizacji": "Fundacja ABC",
+            "adresEmail": "kontakt@abc.pl",
+            "numerTelefonuKom": "+48123456789",
+            "numerTelefonuSta": "+48123456788",
+            "branza": "Edukacja",
+            "cel": "Wspieranie edukacji dzieci",
+            "rozmiarOrganizacji": "Średnia",
+            "rodzajFinansowania": "Własne",
+            "osobaKontaktowa": "Anna Nowak",
+            "RankingESG": "A",
+            "adres": "ul. Edukacyjna 7",
+            "miasto": "Warszawa",
+            "wojewodztwo": "Mazowieckie",
+            "kodPocztowy": "00-100",
+            "kraj": "Polska",
+            "strategia": "Działania edukacyjne dla dzieci z trudnych rodzin.",
+            "doswiadczenie": "Wieloletnie doświadczenie w pracy z młodzieżą.",
+            "cele_spoleczne": "Wspieranie równego dostępu do edukacji.",
+            "cele_biznesowe": "Rozwój świadomości społecznej.",
+            "czlonkowie_zespolu": [
+                {
+                    "imie": "Jan",
+                    "nazwisko": "Kowalski",
+                    "rola": "Dyrektor",
+                    "doswiadczenie": "15 lat w organizacjach pozarządowych."
+                },
+                {
+                    "imie": "Maria",
+                    "nazwisko": "Wiśniewska",
+                    "rola": "Koordynator projektów",
+                    "doswiadczenie": "10 lat w zarządzaniu projektami."
+                }
+            ]
+        },
+        {
+            "nazwaOrganizacji": "Fundacja XYZ",
+            "adresEmail": "kontakt@xyz.pl",
+            "numerTelefonuKom": "+48123456790",
+            "numerTelefonuSta": "+48123456789",
+            "branza": "Ochrona zdrowia",
+            "cel": "Wsparcie dla osób starszych",
+            "rozmiarOrganizacji": "Duża",
+            "rodzajFinansowania": "Dotacje",
+            "osobaKontaktowa": "Tomasz Malinowski",
+            "RankingESG": "B",
+            "adres": "ul. Zdrowa 10",
+            "miasto": "Kraków",
+            "wojewodztwo": "Małopolskie",
+            "kodPocztowy": "30-001",
+            "kraj": "Polska",
+            "strategia": "Pomoc dla osób starszych w domach opieki.",
+            "doswiadczenie": "Długoterminowa pomoc seniorom.",
+            "cele_spoleczne": "Poprawa jakości życia seniorów.",
+            "cele_biznesowe": "Rozwój sieci domów opieki.",
+            "czlonkowie_zespolu": [
+                {
+                    "imie": "Ewa",
+                    "nazwisko": "Nowak",
+                    "rola": "Opiekun",
+                    "doswiadczenie": "7 lat pracy w opiece nad seniorami."
+                },
+                {
+                    "imie": "Karol",
+                    "nazwisko": "Michałowski",
+                    "rola": "Manager",
+                    "doswiadczenie": "5 lat zarządzania domami opieki."
+                }
+            ]
+        }
+    ]
+
+    for ngo_data in ngos_data:
+        # Tworzenie instancji NGO
+        ngo = NGO.objects.create(
+            nazwaOrganizacji=ngo_data["nazwaOrganizacji"],
+            adresEmail=ngo_data["adresEmail"],
+            numerTelefonuKom=ngo_data["numerTelefonuKom"],
+            numerTelefonuSta=ngo_data["numerTelefonuSta"],
+            branza=ngo_data["branza"],
+            cel=ngo_data["cel"],
+            rozmiarOrganizacji=ngo_data["rozmiarOrganizacji"],
+            rodzajFinansowania=ngo_data["rodzajFinansowania"],
+            osobaKontaktowa=ngo_data["osobaKontaktowa"],
+            RankingESG=ngo_data["RankingESG"],
+            adres=ngo_data["adres"],
+            miasto=ngo_data["miasto"],
+            wojewodztwo=ngo_data["wojewodztwo"],
+            kodPocztowy=ngo_data["kodPocztowy"],
+            kraj=ngo_data["kraj"],
+            strategia=ngo_data["strategia"],
+            doswiadczenie=ngo_data["doswiadczenie"],
+            cele_spoleczne=ngo_data["cele_spoleczne"],
+            cele_biznesowe=ngo_data["cele_biznesowe"]
+        )
+
+        # Tworzenie instancji CzłonekZespolu
+        for czlonek_data in ngo_data["czlonkowie_zespolu"]:
+            czlonek = CzłonekZespolu.objects.create(
+                imie=czlonek_data["imie"],
+                nazwisko=czlonek_data["nazwisko"],
+                rola=czlonek_data["rola"],
+                doswiadczenie=czlonek_data["doswiadczenie"],
+                organizacja=ngo
+            )
+
 
 def funkcja(request):
 
 
-    handle()
+    # handle()
+    handle1()
     #    events_data = [
     #     {
     #         'name': 'Wielka Orkiestra Świątecznej Pomocy',
