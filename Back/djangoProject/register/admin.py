@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
-from .models import Firma, NGO
+from .models import Firma, NGO, Konkurs
 
 # class EmployeeInline(admin.StackedInline):
 #     model = Firma
@@ -42,4 +42,37 @@ admin.site.unregister(User)
 # admin.site.register(User, UserAdmin)
 admin.site.register(Firma)
 admin.site.register(NGO)
-# admin.site.register(NGO, NGOAdmin)
+# admin.site.register(Konkurs)
+
+
+
+
+from django.contrib import admin
+from .models import Konkurs, Priorytet, Zadanie, Terminy, ZasadyDotacji, Partner
+
+# Inline model for Priorytet related to Konkurs
+class PriorytetInline(admin.TabularInline):
+    model = Priorytet
+    extra = 1  # Number of empty forms to display
+
+# Inline model for Terminy related to Konkurs
+class TerminyInline(admin.StackedInline):
+    model = Terminy
+    can_delete = False  # Terminy is one-to-one, so can only have one instance per Konkurs
+
+# Inline model for ZasadyDotacji related to Konkurs
+class ZasadyDotacjiInline(admin.StackedInline):
+    model = ZasadyDotacji
+    can_delete = False
+
+# Admin for Konkurs with inlines
+class KonkursAdmin(admin.ModelAdmin):
+    inlines = [PriorytetInline, TerminyInline, ZasadyDotacjiInline]
+    list_display = ('nazwa', 'data_ogloszenia', 'data_zakonczenia_skladania_ofert', 'calkowita_kwota')
+    search_fields = ('nazwa', 'opis')
+    list_filter = ('data_ogloszenia', 'data_zakonczenia_skladania_ofert')
+
+# Register other models individually
+admin.site.register(Konkurs, KonkursAdmin)
+admin.site.register(Zadanie)  # Zadanie is managed separately under Priorytet
+admin.site.register(Partner)

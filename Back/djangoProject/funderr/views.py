@@ -1,7 +1,50 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from register.models import Firma, NGO
+from register.models import Firma, NGO, Konkurs, Priorytet, Zadanie, Terminy, ZasadyDotacji
 from difflib import SequenceMatcher
+from datetime import date
+import html.parser
+from time import sleep
+from django.http import HttpResponse, JsonResponse
+
+from django.forms import formset_factory, modelformset_factory
+from django.forms.models import model_to_dict
+from openai import APIConnectionError
+from traceback import format_exc
+from django.views.decorators.http import require_GET, require_POST
+from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse
+from django.http import QueryDict
+from django.http import HttpResponse, QueryDict
+from django.urls import reverse 
+from django.shortcuts import render, redirect, get_list_or_404, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.core.mail import EmailMessage as DjangoCoreEmailMessage, EmailMultiAlternatives, send_mass_mail, get_connection, send_mail
+from django.utils.html import format_html
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+import uuid
+import json
+import requests
+from django.contrib import messages
+from django.forms.models import model_to_dict
+
+
+
+from email.message import EmailMessage
+from email.parser import BytesParser
+from email.mime.image import MIMEImage
+from email.mime.image import MIMEImage
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email import message_from_string, policy
+
+
+import re
+import html2text
+from base64 import b64decode, b64encode
+import os
+from collections import defaultdict
 
 def dopasowanie(obiekt1, obiekt2):
     """Obliczanie dopasowania pomiędzy dwoma obiektami (firma lub NGO) na podstawie kilku kryteriów"""
@@ -201,3 +244,90 @@ def home(request):
         }
     }
     return JsonResponse(response_data)
+
+
+
+
+def funkcja(request):
+    
+    # 1. Create a Konkurs record
+    konkurs = Konkurs.objects.create(
+        nazwa="Konkurs Fundusz Młodzieżowy 2024",
+        opis="Otwarte konkursy ofert na realizację zadań publicznych dofinansowanych w 2024 r. ze środków Rządowego Programu Fundusz Młodzieżowy.",
+        calkowita_kwota=47_000_000,  # Total amount as mentioned in the text
+        data_ogloszenia=date(2023, 9, 15),  # Replace with the actual announcement date if available
+        data_zakonczenia_skladania_ofert=date(2023, 9, 25),
+        infolinia_telefon="601-901-327",
+        infolinia_email="fm@niw.gov.pl"
+    )
+
+    # 2. Create Priorytet records related to the Konkurs
+    priorytet1 = Priorytet.objects.create(
+        konkurs=konkurs,
+        numer=1,
+        nazwa="Aktywizacja młodzieży w samorządach",
+        opis="Realizacja projektów w ramach Priorytetu 1 odbywać się będzie poprzez wyłonienie Operatorów.",
+        kwota_2024=7_000_000,
+        kwota_2025=7_000_000,
+        kwota_2026=7_000_000
+    )
+
+    priorytet2 = Priorytet.objects.create(
+        konkurs=konkurs,
+        numer=2,
+        nazwa="Organizacje młodzieżowe w życiu publicznym",
+        opis="Projekty powinny przyczyniać się do zwiększenia obecności organizacji młodzieżowych w życiu publicznym.",
+        kwota_2024=7_000_000,
+        kwota_2025=7_000_000,
+        kwota_2026=None  # Not applicable in 2026
+    )
+
+    priorytet3 = Priorytet.objects.create(
+        konkurs=konkurs,
+        numer=3,
+        nazwa="Wzmocnienie kompetencji organizacji młodzieżowych",
+        opis="Projekty mają na celu budowę i wzmocnienie potencjału organizacji młodzieżowych.",
+        kwota_2024=5_200_000,
+        kwota_2025=5_200_000,
+        kwota_2026=None
+    )
+
+    # 3. Create Zadanie (task) records related to Priorytety
+    zadanie1_1 = Zadanie.objects.create(
+        priorytet=priorytet1,
+        numer=1,
+        nazwa="Tworzenie i aktywizacja rad młodzieżowych",
+        opis="Tworzenie i aktywizacja rad młodzieżowych w jednostkach samorządu terytorialnego."
+    )
+
+    zadanie1_2 = Zadanie.objects.create(
+        priorytet=priorytet1,
+        numer=2,
+        nazwa="Aktywizacja samorządów uczniowskich i studenckich",
+        opis="Aktywizacja samorządów uczniowskich i studenckich w jednostkach edukacyjnych."
+    )
+
+    zadanie2_1 = Zadanie.objects.create(
+        priorytet=priorytet2,
+        numer=1,
+        nazwa="Edukacja obywatelska i dialog obywatelski",
+        opis="Zwiększanie udziału młodzieży w dialogu obywatelskim i procesach konsultacji."
+    )
+
+    # 4. Create Terminy (dates) related to the Konkurs
+    terminy = Terminy.objects.create(
+        konkurs=konkurs,
+        start_realizacji=date(2024, 1, 1),
+        koniec_realizacji=date(2026, 12, 31),  # End date as per text
+        data_rozstrzygniecia=date(2023, 11, 30)
+    )
+
+    # 5. Create ZasadyDotacji (funding rules) related to the Konkurs
+    zasady_dotacji = ZasadyDotacji.objects.create(
+        konkurs=konkurs,
+        maksymalna_dotacja=6_300_000,  # Maximum possible dotation mentioned for Priorytet 1
+        minimalna_dotacja=50_000,
+        wymog_wkladu_wlasnego=False  # Wkład własny not required as per text
+    )
+
+    return JsonResponse({"status": "success", "message": "Data created successfully!"})
