@@ -51,8 +51,6 @@ class NGO(models.Model):
     cele_biznesowe = models.TextField()  # Cele biznesowe
     zespol = models.ManyToManyField(CzłonekZespolu, related_name='organizacja_zespoly')
 
-    def __str__(self):
-        return self.nazwa
 
 # Model dla firm
 
