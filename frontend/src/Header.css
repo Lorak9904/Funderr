@@ -8,16 +8,10 @@
   }
   
   .logo {
-	
 	color: white;
-	font-size: 20px;
+	font-size: 24px;
   }
-
-  .logo img {
-	width: 214px; /* Ширина логотипа */
-	height: auto; /* Высота изменяется пропорционально */
-  }
-  
+    
   .nav ul {
 	list-style: none;
 	display: flex;
@@ -74,10 +68,10 @@
 	.nav.active {
 	  display: block; /* pokazuje menu jak jest aktywnie*/
 	  position: absolute;
-	  top: 60px;
+	  top: 90px;
 	  left: 0;
 	  width: 100%;
-	  background-color: #F65F6F
+	  background-color: #F65F6F;
 	}
   
 	.nav ul {
