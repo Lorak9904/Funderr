@@ -1,0 +1,71 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg
+*.egg-info/
+dist/
+build/
+*.log
+*.sqlite3
+
+__pycache__/
+
+# --- Environment files ---
+env/
+env2/
+venv/
+venv2/
+.venv/
+.venv2/
+.env
+.env2
+*.env
+*.env2
+
+# --- Node.js ---
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# --- macOS ---
+.DS_Store
+
+# --- Logs ---
+*.log
+*.out
+*.err
+*.pid
+
+# --- IDEs/Editors ---
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# --- Django ---
+*.sqlite3
+db.sqlite3
+media/
+staticfiles/
+django_error.log
+celerybeat-schedule
+*.pot
+*.pyc
+
+# --- Test Coverage/Reports ---
+.coverage
+coverage.xml
+*.coveragerc
+
+# --- Docker ---
+docker-compose.override.yml
+.dockerignore
+
+# --- Temporary Files ---
+*.tmp
+*.temp
+*.swp
+*.bak
+*.old
+*.orig
