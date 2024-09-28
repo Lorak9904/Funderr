@@ -12,6 +12,12 @@
 	color: white;
 	font-size: 20px;
   }
+
+  .logo img {
+	width: 214px; /* Ширина логотипа */
+	height: auto; /* Высота изменяется пропорционально */
+  }
+  
   .nav ul {
 	list-style: none;
 	display: flex;
