@@ -54,58 +54,12 @@ class NGO(models.Model):
 
 # Model dla firm
 
-class Konkurs(models.Model):
-    nazwa = models.CharField(max_length=255)
-    opis = models.TextField()
-    calkowita_kwota = models.DecimalField(max_digits=10, decimal_places=2)
-    data_ogloszenia = models.DateField()
-    data_zakonczenia_skladania_ofert = models.DateField()
-    infolinia_telefon = models.CharField(max_length=20)
-    infolinia_email = models.EmailField()
     
-    def __str__(self):
-        return self.nazwa
 
-class Priorytet(models.Model):
-    konkurs = models.ForeignKey(Konkurs, related_name='priorytety', on_delete=models.CASCADE)
-    numer = models.IntegerField()  # Priorytet 1, Priorytet 2 itd.
-    nazwa = models.CharField(max_length=255)
-    opis = models.TextField()
-    kwota_2024 = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    kwota_2025 = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    kwota_2026 = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
-    def __str__(self):
-        return f"Priorytet {self.numer}: {self.nazwa}"
-
-class Zadanie(models.Model):
-    priorytet = models.ForeignKey(Priorytet, related_name='zadania', on_delete=models.CASCADE)
-    numer = models.IntegerField()  # Ścieżka 1, Ścieżka 2 itd.
-    nazwa = models.CharField(max_length=255)
-    opis = models.TextField()
-
-    def __str__(self):
-        return f"Zadanie {self.numer}: {self.nazwa}"
-
-class Terminy(models.Model):
-    konkurs = models.OneToOneField(Konkurs, related_name='terminy', on_delete=models.CASCADE)
-    start_realizacji = models.DateField()
-    koniec_realizacji = models.DateField()
-    data_rozstrzygniecia = models.DateField()
-
-    def __str__(self):
-        return f"Terminy dla {self.konkurs.nazwa}"
-
-class ZasadyDotacji(models.Model):
-    konkurs = models.OneToOneField(Konkurs, related_name='zasady_dotacji', on_delete=models.CASCADE)
-    maksymalna_dotacja = models.DecimalField(max_digits=10, decimal_places=2)
-    minimalna_dotacja = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    wymog_wkladu_wlasnego = models.BooleanField(default=False)
-
-    def __str__(self):
-        return f"Zasady dotacji dla {self.konkurs.nazwa}"
 
 class Partner(models.Model):
+    firma = models.ForeignKey('Firma', on_delete=models.CASCADE, related_name='partnerzy', null=True)
     nazwa = models.CharField(max_length=255)
     opis = models.TextField()
 
@@ -140,8 +94,7 @@ class Firma(models.Model):
     cele_spoleczne = models.TextField()  # Cele społeczne
     cele_biznesowe = models.TextField()  # Cele biznesowe
     budzet_spoleczny = models.DecimalField(max_digits=12, decimal_places=2)  # Budżet na działania społeczne
-    partnerzy = models.ManyToManyField(Partner, related_name='firmy', blank=True)  # Lista partnerów
-    konkursy = models.ManyToManyField(Konkurs, related_name='firmy', blank=True)  # Lista konkursów
 
     def __str__(self):
         return self.nazwaFirmy
+
