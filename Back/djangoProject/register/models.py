@@ -17,7 +17,7 @@ class CzłonekZespolu(models.Model):
     nazwisko = models.CharField(max_length=100)
     rola = models.CharField(max_length=100)
     doswiadczenie = models.TextField()
-    organizacja = models.ForeignKey('NGO', on_delete=models.CASCADE, related_name='czlonkowie_zespolu')
+    # organizacja = models.ForeignKey('NGO', on_delete=models.CASCADE, related_name='czlonkowie_zespolu')
 
     def __str__(self):
         return f'{self.imie} {self.nazwisko}'
