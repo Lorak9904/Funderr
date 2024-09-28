@@ -1,6 +1,5 @@
 from django.db import models
 from django.core.validators import RegexValidator
-
 # Model dla NGO'sów
 
 class Projekt(models.Model):
@@ -144,7 +143,7 @@ class Firma(models.Model):
     cele_biznesowe = models.TextField()  # Cele biznesowe
     budzet_spoleczny = models.DecimalField(max_digits=12, decimal_places=2)  # Budżet na działania społeczne
     partnerzy = models.ManyToManyField(Partner, related_name='firmy', blank=True)  # Lista partnerów
-    granty = models.ManyToManyField(Konkurs, related_name='firmy', blank=True)  # Lista konkursów
+    konkursy = models.ManyToManyField(Konkurs, related_name='firmy', blank=True)  # Lista konkursów
 
     def __str__(self):
-        return self.nazwa
+        return self.nazwaFirmy
