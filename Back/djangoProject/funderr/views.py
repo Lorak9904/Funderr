@@ -98,7 +98,11 @@ def dopasowanie(obiekt1, obiekt2):
     # Zwracamy wynik dopasowania jako procent (od 0 do 100)
     return round(wynik * 100, 2)
 
-def browse(request):
+
+
+
+
+def matching(request):
     # Tworzenie przykładowych obiektów firm
     firma1 = Firma.objects.create(
         nazwaFirmy="TechCorp",
@@ -661,36 +665,41 @@ def handle_numbers():
         firma.numerTelefonuSta = numerTelefonuSta
         firma.save()
 
-def serialize_grant_to_json(grant_id):
-    grant = Grant.objects.last()
+def serialize_all_grants_to_json():
+    # Fetch all Grant objects
+    grants = Grant.objects.all()
     
-    # Build a clean dictionary (JSON-friendly) response
-    grant_data = {
-        'nazwa_grantu': grant.nazwa_grantu,
-        'maksymalna_kwota': str(grant.maksymalna_kwota),  # Ensure Decimal fields are properly serialized
-        'data_rozpoczecia': grant.data_rozpoczecia.isoformat() if grant.data_rozpoczecia else None,
-        'data_zakonczenia': grant.data_zakonczenia.isoformat() if grant.data_zakonczenia else None,
-        'opis': grant.opis,
-        'priorytety': [
-            {
-                'nazwa_priorytetu': priorytet.nazwa_priorytetu,
-                'opis': priorytet.opis
-            }
-            for priorytet in grant.priorytety.all()  # Priorytety is a ManyToMany field
-        ],
-        'competitions': [
-            {
-                'nazwa_konkursu': competition.nazwa_konkursu,
-                'status': competition.status,
-                'data_rozpoczecia': competition.data_rozpoczecia.isoformat() if competition.data_rozpoczecia else None,
-                'data_zakonczenia': competition.data_zakonczenia.isoformat() if competition.data_zakonczenia else None,
-                'opis': competition.opis
-            }
-            for competition in grant.competitions.all()  # Competitions linked to the grant
-        ]
-    }
+    # Serialize each grant into a dictionary
+    grants_data = []
+    for grant in grants:
+        grant_data = {
+            'nazwa_grantu': grant.nazwa_grantu,
+            'maksymalna_kwota': str(grant.maksymalna_kwota),  # Ensure Decimal fields are properly serialized
+            'data_rozpoczecia': grant.data_rozpoczecia.isoformat() if grant.data_rozpoczecia else None,
+            'data_zakonczenia': grant.data_zakonczenia.isoformat() if grant.data_zakonczenia else None,
+            'opis': grant.opis,
+            'priorytety': [
+                {
+                    'nazwa_priorytetu': priorytet.nazwa_priorytetu,
+                    'opis': priorytet.opis
+                }
+                for priorytet in grant.priorytety.all()  # Priorytety is a ManyToMany field
+            ],
+            'competitions': [
+                {
+                    'nazwa_konkursu': competition.nazwa_konkursu,
+                    'status': competition.status,
+                    'data_rozpoczecia': competition.data_rozpoczecia.isoformat() if competition.data_rozpoczecia else None,
+                    'data_zakonczenia': competition.data_zakonczenia.isoformat() if competition.data_zakonczenia else None,
+                    'opis': competition.opis
+                }
+                for competition in grant.competitions.all()  # Competitions linked to the grant
+            ]
+        }
+        # Append each serialized grant to the list
+        grants_data.append(grant_data)
     
-    return grant_data
+    return grants_data
 
 
 def funkcja(request):
@@ -910,6 +919,85 @@ def funkcja(request):
     return JsonResponse(serialize_grant_to_json(0), safe=False)
 
 
+def serialize_all_firma_to_json():
+    # Fetch all Firma objects
+    firms = Firma.objects.all()
+    
+    # Create an empty list to store the serialized data
+    firms_data = []
+    
+    # Loop through each Firma and convert it to a dictionary
+    for firm in firms:
+        firm_data = model_to_dict(firm)  # Convert the model instance to a dictionary
+        firm_data['budzet_spoleczny'] = str(firm_data['budzet_spoleczny'])  # Ensure Decimal fields are serialized
+        
+        # Include related Partner records
+        firm_data['partnerzy'] = [
+            {
+                'nazwa': partner.nazwa,
+                'opis': partner.opis
+            }
+            for partner in firm.partnerzy.all()  # Fetch related Partner objects
+        ]
+        
+        firms_data.append(firm_data)  # Append the dictionary to the list
+    
+    return firms_data
 
 
 
+
+from django.forms.models import model_to_dict
+from django.http import JsonResponse
+# from .models import NGO
+
+def serialize_all_ngo_to_json():
+    # Fetch all NGO objects
+    ngos = NGO.objects.all()
+    
+    # Create an empty list to store the serialized data
+    ngos_data = []
+    
+    # Loop through each NGO and convert it to a dictionary
+    for ngo in ngos:
+        ngo_data = model_to_dict(ngo)  # Convert the model instance to a dictionary
+        
+        # Include related Projekt records
+        ngo_data['projekty'] = [
+            {
+                'nazwa': projekt.nazwa,
+                'opis': projekt.opis,
+                'data_rozpoczecia': projekt.data_rozpoczecia.isoformat() if projekt.data_rozpoczecia else None,
+                'data_zakonczenia': projekt.data_zakonczenia.isoformat() if projekt.data_zakonczenia else None,
+            }
+            for projekt in ngo.projekty.all()  # Fetch related Projekt objects
+        ]
+        
+        # Include related CzłonekZespolu records
+        ngo_data['czlonkowie_zespolu'] = [
+            {
+                'imie': czlonek.imie,
+                'nazwisko': czlonek.nazwisko,
+                'rola': czlonek.rola,
+                'doswiadczenie': czlonek.doswiadczenie,
+            }
+            for czlonek in ngo.czlonkowie_zespolu.all()  # Fetch related CzłonekZespolu objects
+        ]
+        
+        ngos_data.append(ngo_data)  # Append the dictionary to the list
+    
+    return ngos_data
+
+
+def browse(request):
+
+    result = {}
+    result['companies'] = list(Firma.objects.all().values())
+
+    result = {'grants': serialize_all_grants_to_json(),
+              'companies': serialize_all_firma_to_json(),
+              'ngo': serialize_all_ngo_to_json()}
+
+
+
+    return JsonResponse(result, safe=False)
