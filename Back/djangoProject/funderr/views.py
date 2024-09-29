@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from register.models import Firma, NGO, Partner
+from register.models import Firma, NGO, Partner, Priorytet, Competition, Grant
 from .models import Event
 from difflib import SequenceMatcher
 from datetime import date
@@ -10,6 +10,7 @@ from django.http import HttpResponse, JsonResponse
 from datetime import date, time
 from django.http import JsonResponse
 from django.core import serializers
+import random
 
 from django.forms import formset_factory, modelformset_factory
 from django.forms.models import model_to_dict
@@ -305,6 +306,52 @@ def search_view(request):
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 
+def save_competition_data():
+    # Create or get the relevant Priorytet objects
+    priorytet_1, created = Priorytet.objects.get_or_create(
+        nazwa_priorytetu="Aktywizacja młodzieży w samorządach",
+        opis="Priorytet dla młodzieżowych rad i samorządów."
+    )
+
+    priorytet_2, created = Priorytet.objects.get_or_create(
+        nazwa_priorytetu="Organizacje młodzieżowe w życiu publicznym",
+        opis="Zwiększanie obecności organizacji młodzieżowych w życiu publicznym."
+    )
+
+    priorytet_3, created = Priorytet.objects.get_or_create(
+        nazwa_priorytetu="Wzmocnienie kompetencji organizacji młodzieżowych",
+        opis="Budowanie i wzmocnienie potencjału organizacji młodzieżowych."
+    )
+
+    # Create the Grant object
+    grant = Grant.objects.create(
+        nazwa_grantu="Fundusz Młodzieżowy 2024",
+        maksymalna_kwota=2100000.00,
+        data_rozpoczecia="2024-01-01",
+        data_zakonczenia="2026-12-31",
+        opis="Grant na realizację zadań aktywizujących młodzież w samorządach.",
+        priorytet=priorytet_1  # This is the primary priorytet (if needed)
+    )
+
+    # Link additional Priorytet objects (many-to-many)
+    grant.priorytety.add(priorytet_1, priorytet_2, priorytet_3)
+
+    # Create a Competition object linked to the Grant
+    competition = Competition.objects.create(
+        nazwa_konkursu="Aktywizacja młodzieży w samorządach - Konkurs 2024",
+        grant=grant,
+        data_rozpoczecia="2023-08-03",
+        data_zakonczenia="2023-09-25",
+        opis="Konkurs na realizację zadań publicznych w ramach Funduszu Młodzieżowego 2024.",
+        status="otwarty"
+    )
+
+    # Optional: print to confirm
+    print(f"Created Grant: {grant}")
+    print(f"Created Competition: {competition}")
+
+
+
 def handle():
     companies_data = [
         {
@@ -568,11 +615,87 @@ def handle():
 
 
 
+
+def handle_tags():
+    tags_mapping = {
+        "PKN Orlen": "energetyka, paliwa, petrochemia, zrównoważony, ekologia, innowacje, rozwój, infrastruktura, wydobycie, zrównoważony rozwój, energia odnawialna, przemysł, biopaliwa, efektywność energetyczna, technologie",
+        "Polsat": "media, telewizja, rozrywka, sport, informatyka, kultura, reklama, transmisja, programowanie, nowoczesne technologie, internet, streaming, wydarzenia, społeczność, digital",
+        "KGHM Polska Miedź": "górnictwo, miedź, metale, zasoby, infrastruktura, wydobycie, przemysł, ekologia, odpowiedzialność społeczna, innowacje, bezpieczeństwo, surowce, recykling, praca, energia",
+        "Allegro": "handel, e-commerce, detali, technologie, innowacje, zakupy, platforma, digitalizacja, klienci, trendy, logistyka, marketing, konkurencja, sprzedaż, produkty",
+        "LPP S.A.": "moda, odzież, styl, projektowanie, detali, trendy, kolekcje, brand, jakość, zrównoważony rozwój, innowacje, retail, marketing, sprzedaż, moda uliczna",
+        "Tauron": "energetyka, zasilanie, odnawialne, usługi, infrastruktura, innowacje, rozwój, ekologia, bezpieczeństwo, efektywność energetyczna, modernizacja, wspieranie społeczności, czysta energia, zarządzanie, technologia",
+        "Złote Tarasy": "handel, centrum, rozrywka, wydarzenia, gastronomia, zakupy, atrakcje, lokalizacja, społeczność, design, inwestycje, relaks, styl życia, promocje, eventy",
+        "Coca-Cola HBC Polska": "napoje, soki, gastronomia, marketing, branding, CSR, produkcja, innowacje, ekologia, efektywność, społeczność, zdrowie, jakość, zrównoważony rozwój, globalizacja",
+        "Nestlé Polska": "żywność, zdrowie, dieta, produkty, dzieci, jakość, zrównoważony rozwój, innowacje, społeczność, bezpieczeństwo żywności, etyka, marketing, badania, ekologia, jakość życia",
+    }
+
+    for nazwa, tags in tags_mapping.items():
+    
+        firma = Firma.objects.get(nazwaFirmy=nazwa)
+        firma.tags = tags
+        firma.save()
+
+
+def handle_numbers():
+    companies = [
+        "PKN Orlen",
+        "Polsat",
+        "KGHM Polska Miedź",
+        "Allegro",
+        "LPP S.A.",
+        "Tauron",
+        "Złote Tarasy",
+        "Coca-Cola HBC Polska",
+        "Nestlé Polska",
+    ]
+    
+    for nazwa in companies:
+    
+        firma = Firma.objects.get(nazwaFirmy=nazwa)
+        
+        # Generate random 9-digit phone numbers
+        numerTelefonuKom = str(random.randint(600000000, 699999999))  # Mobile
+        numerTelefonuSta = str(random.randint(300000000, 399999999))  # Landline
+
+        firma.numerTelefonuKom = numerTelefonuKom
+        firma.numerTelefonuSta = numerTelefonuSta
+        firma.save()
+
+def serialize_grant_to_json(grant_id):
+    grant = Grant.objects.last()
+    
+    # Build a clean dictionary (JSON-friendly) response
+    grant_data = {
+        'nazwa_grantu': grant.nazwa_grantu,
+        'maksymalna_kwota': str(grant.maksymalna_kwota),  # Ensure Decimal fields are properly serialized
+        'data_rozpoczecia': grant.data_rozpoczecia.isoformat() if grant.data_rozpoczecia else None,
+        'data_zakonczenia': grant.data_zakonczenia.isoformat() if grant.data_zakonczenia else None,
+        'opis': grant.opis,
+        'priorytety': [
+            {
+                'nazwa_priorytetu': priorytet.nazwa_priorytetu,
+                'opis': priorytet.opis
+            }
+            for priorytet in grant.priorytety.all()  # Priorytety is a ManyToMany field
+        ],
+        'competitions': [
+            {
+                'nazwa_konkursu': competition.nazwa_konkursu,
+                'status': competition.status,
+                'data_rozpoczecia': competition.data_rozpoczecia.isoformat() if competition.data_rozpoczecia else None,
+                'data_zakonczenia': competition.data_zakonczenia.isoformat() if competition.data_zakonczenia else None,
+                'opis': competition.opis
+            }
+            for competition in grant.competitions.all()  # Competitions linked to the grant
+        ]
+    }
+    
+    return grant_data
+
+
 def funkcja(request):
 
-
-    handle()
-    #    events_data = [
+    # save_competition_data()    #    events_data = [
     #     {
     #         'name': 'Wielka Orkiestra Świątecznej Pomocy',
     #         'description': 'Annual charity event supporting healthcare in Poland.',
@@ -784,7 +907,9 @@ def funkcja(request):
     #     event.save()  # Save the event to the database
 
     
-    return JsonResponse({"status": "success", "message": "Data created successfully!"})
+    return JsonResponse(serialize_grant_to_json(0), safe=False)
+
+
 
 
 

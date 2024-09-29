@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
-from .models import Firma, NGO
+from .models import Firma, NGO, Grant
 
 # class EmployeeInline(admin.StackedInline):
 #     model = Firma
@@ -42,12 +42,28 @@ admin.site.unregister(User)
 # admin.site.register(User, UserAdmin)
 admin.site.register(Firma)
 admin.site.register(NGO)
-# admin.site.register(Konkurs)
-
-
-
+admin.site.register(Grant)
 
 from django.contrib import admin
+from .models import Grant, Priorytet, Competition
+
+class GrantAdmin(admin.ModelAdmin):
+    list_display = ('nazwa_grantu', 'maksymalna_kwota', 'data_rozpoczecia', 'data_zakonczenia', 'priorytet')
+    search_fields = ('nazwa_grantu',)
+    list_filter = ('priorytet',)
+
+class PriorytetAdmin(admin.ModelAdmin):
+    list_display = ('nazwa_priorytetu',)
+    search_fields = ('nazwa_priorytetu',)
+
+class CompetitionAdmin(admin.ModelAdmin):
+    list_display = ('nazwa_konkursu', 'grant', 'data_rozpoczecia', 'data_zakonczenia', 'status')
+    search_fields = ('nazwa_konkursu',)
+    list_filter = ('grant', 'status')
+
+# Registering models
+admin.site.register(Priorytet)
+admin.site.register(Competition)
 
 # Inline model for Priorytet related to Konkurs
 # class PriorytetInline(admin.TabularInline):
