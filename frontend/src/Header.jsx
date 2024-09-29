@@ -1,34 +1,34 @@
 import React, { useState } from 'react';
-import './Header.css'; // Подключаем стили
+import { Link } from 'react-router-dom';
+import './Header.css';
 
 const Header = () => {
-  // Состояние для управления меню (открыто/закрыто)
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // Функция для переключения состояния меню
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
   return (
-    <header className="header">
+    <header className="header mb-14">
       <div className="logo">
-        <img src="src/assets/logo.png" alt="logo" />
+
+        <Link to="/">
+          <img src="src/assets/logo.png" alt="logo" />
+        </Link>
       </div>
 
-      {/* Бургер-меню */}
+
       <div className={`burger ${isMenuOpen ? 'active' : ''}`} onClick={toggleMenu}>
         <span></span>
         <span></span>
         <span></span>
       </div>
 
-      {/* Навигация, которая будет скрываться на мобильных */}
       <nav className={`nav ${isMenuOpen ? 'active' : ''}`}>
         <ul>
-          <li><a href="#home">NEWS</a></li>
-          <li><a href="#about">ABOUT US</a></li>
-          <li><a href="#services">LOGIN</a></li>
+          <li><Link to="/AboutUs">ABOUT US</Link></li>
+          <li><Link to="/LogIn">LOGIN</Link></li>
         </ul>
       </nav>
     </header>

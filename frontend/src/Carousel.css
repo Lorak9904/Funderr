@@ -1,0 +1,34 @@
+.carousel-container {
+    width: 100%;
+    max-width: 90%; /* Максимальная ширина карусели */
+    margin: 0 auto; /* Центрирование карусели */
+}
+
+.carousel-slide {
+    display: flex;
+    flex-direction: column; /* Вертикальное размещение контента */
+    justify-content: center; /* Центрирование по вертикали */
+    align-items: center; /* Центрирование по горизонтали */
+    padding: 10px; /* Отступы вокруг слайда */
+}
+
+.carousel-image {
+    max-width: 100%; /* Ограничение ширины изображения */
+    height: auto; /* Поддержка соотношения сторон */
+    border-radius: 1rem; /* Закругленные углы */
+}
+
+.carousel-content {
+    text-align: center; /* Центрирование текста */
+    margin-top: 10px; /* Отступ сверху */
+}
+
+.carousel-content h3 {
+    margin: 10px 0 5px; /* Отступы для заголовка */
+    font-size: 1.5em; /* Размер заголовка */
+}
+
+.carousel-content p {
+    font-size: 1em; /* Размер описания */
+    color: #555; /* Цвет текста описания */
+}
