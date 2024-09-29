@@ -51,11 +51,64 @@ import os
 
 
 
+def ngo_to_json(ngo_instance):
+    return {
+        "nazwaOrganizacji": ngo_instance.nazwaOrganizacji,
+        "adresEmail": ngo_instance.adresEmail,
+        "numerTelefonuKom": ngo_instance.numerTelefonuKom,
+        "numerTelefonuSta": ngo_instance.numerTelefonuSta,
+        "branza": ngo_instance.branza,
+        "cel": ngo_instance.cel,
+        "rozmiarOrganizacji": ngo_instance.rozmiarOrganizacji,
+        "rodzajFinansowania": ngo_instance.rodzajFinansowania,
+        "osobaKontaktowa": ngo_instance.osobaKontaktowa,
+        "RankingESG": ngo_instance.RankingESG,
+        "adres": ngo_instance.adres,
+        "miasto": ngo_instance.miasto,
+        "wojewodztwo": ngo_instance.wojewodztwo,
+        "kodPocztowy": ngo_instance.kodPocztowy,
+        "kraj": ngo_instance.kraj,
+        "strategia": ngo_instance.strategia,
+        "doswiadczenie": ngo_instance.doswiadczenie,
+        "cele_spoleczne": ngo_instance.cele_spoleczne,
+        "cele_biznesowe": ngo_instance.cele_biznesowe,
+        "zespol": [{"id": czlon.id, "imie": czlon.imie, "nazwisko": czlon.nazwisko} for czlon in ngo_instance.zespol.all()],
+        "tags": ngo_instance.tags,
+    }
 
+def ngo_detail_view(request, ngo_id):
+    ngo_instance = NGO.objects.get(id=ngo_id)
+    data = ngo_to_json(ngo_instance)
+    return JsonResponse(data)
 
+def firma_to_json(firma_instance):
+    return {
+        "nazwaFirmy": firma_instance.nazwaFirmy,
+        "adresEmail": firma_instance.adresEmail,
+        "numerTelefonuKom": firma_instance.numerTelefonuKom,
+        "numerTelefonuSta": firma_instance.numerTelefonuSta,
+        "branza": firma_instance.branza,
+        "cel": firma_instance.cel,
+        "rozmiarFirmy": firma_instance.rozmiarFirmy,
+        "rodzajFinansowania": firma_instance.rodzajFinansowania,
+        "osobaKontaktowa": firma_instance.osobaKontaktowa,
+        "RankingESG": firma_instance.RankingESG,
+        "adres": firma_instance.adres,
+        "miasto": firma_instance.miasto,
+        "wojewodztwo": firma_instance.wojewodztwo,
+        "kodPocztowy": firma_instance.kodPocztowy,
+        "kraj": firma_instance.kraj,
+        "strategia_spolecznego_oddzialywania": firma_instance.strategia_spolecznego_oddzialywania,
+        "cele_spoleczne": firma_instance.cele_spoleczne,
+        "cele_biznesowe": firma_instance.cele_biznesowe,
+        "budzet_spoleczny": str(firma_instance.budzet_spoleczny),  # Decimal as string
+        "tags": firma_instance.tags,
+    }
 
-
-
+def firma_detail_view(request, firma_id):
+    firma_instance = Firma.objects.get(id=firma_id)
+    data = firma_to_json(firma_instance)
+    return JsonResponse(data)
 
 def dopasowanie(obiekt1, obiekt2):
     """Obliczanie dopasowania pomiędzy dwoma obiektami (firma lub NGO) na podstawie kilku kryteriów"""

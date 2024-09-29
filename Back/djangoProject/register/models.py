@@ -57,10 +57,6 @@ class NGO(models.Model):
 
 # Model dla firm
 
-    
-
-
-
 class Partner(models.Model):
     firma = models.ForeignKey('Firma', on_delete=models.CASCADE, related_name='partnerzy', null=True)
     nazwa = models.CharField(max_length=255)
