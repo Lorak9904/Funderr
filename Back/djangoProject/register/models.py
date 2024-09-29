@@ -50,13 +50,12 @@ class NGO(models.Model):
     cele_spoleczne = models.TextField()  # Cele społeczne
     cele_biznesowe = models.TextField()  # Cele biznesowe
     zespol = models.ManyToManyField(CzłonekZespolu, related_name='organizacja_zespoly')
+    tags = models.CharField(max_length=255, null=True, verbose_name="taki")
 
+    def __str__(self):
+        return self.nazwaOrganizacji
 
 # Model dla firm
-
-    
-
-
 
 class Partner(models.Model):
     firma = models.ForeignKey('Firma', on_delete=models.CASCADE, related_name='partnerzy', null=True)
@@ -94,6 +93,7 @@ class Firma(models.Model):
     cele_spoleczne = models.TextField()  # Cele społeczne
     cele_biznesowe = models.TextField()  # Cele biznesowe
     budzet_spoleczny = models.DecimalField(max_digits=12, decimal_places=2)  # Budżet na działania społeczne
+    tags = models.CharField(max_length=255, null=True, verbose_name="tagi")
 
     def __str__(self):
         return self.nazwaFirmy
